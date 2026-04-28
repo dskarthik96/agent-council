@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+memory/long_term/*.json
+knowledge/*.md
+!knowledge/.gitkeep

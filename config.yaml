@@ -1,50 +1,65 @@
-# Council — agent configuration
-# Models: claude-haiku-4-5-20251001 (fast/cheap) · claude-sonnet-4-6 (balanced) · claude-opus-4-7 (powerful)
+# ─────────────────────────────────────────────────────────────────────────────
+# Agent Council — config.yaml
+# Edit this file to customise your council, or run: python setup.py
+# ─────────────────────────────────────────────────────────────────────────────
 
+project:
+  name: my-council
+  context: ""            # One-line description — injected into every agent as shared context
+
+# ── Leader (Agent A) ─────────────────────────────────────────────────────────
+# The Leader routes queries, commands sub-agents, and passes final judgment.
+leader:
+  model: claude-sonnet-4-6   # upgrade to claude-opus-4-7 for harder decisions
+
+# ── Sub-agents ────────────────────────────────────────────────────────────────
+# Each entry maps a name to a skill and optional overrides.
+# Built-in skills: strategist · critic · researcher · executor
+# Add custom skills by creating skills/your_skill.py (see skills/base.py)
 agents:
   strategist:
-    model: claude-sonnet-4-6
-    role: |
-      You are the Strategist on this council. Think long-term: second-order effects,
-      alignment with core goals, strategic risks, and missed opportunities.
-      Ask: Is this the right direction? What are we not seeing?
+    skill: strategist
+    extra_instructions: ""   # domain-specific focus, e.g. "focus on SaaS B2B context"
 
   critic:
-    model: claude-sonnet-4-6
-    role: |
-      You are the Critic on this council. Your job is to find flaws and challenge assumptions.
-      Be direct and specific. Ask: What could go wrong? What are we assuming without evidence?
-      What is the strongest argument against this course of action?
-
-  executor:
-    model: claude-haiku-4-5-20251001
-    role: |
-      You are the Executor on this council. Focus on concrete implementation.
-      Ask: What are the exact next steps? What dependencies or blockers exist?
-      What is the fastest credible path to completion?
+    skill: critic
+    extra_instructions: ""
 
   researcher:
-    model: claude-haiku-4-5-20251001
-    role: |
-      You are the Researcher on this council. Synthesise what is known and surface gaps.
-      Ask: What precedents or patterns are relevant? What information are we missing?
-      What context changes the picture?
+    skill: researcher
+    extra_instructions: ""
 
+  executor:
+    skill: executor
+    extra_instructions: ""
+
+# ── Local models (optional, free) ─────────────────────────────────────────────
+# If Ollama is running, routing and compression tasks use local models at zero cost.
+# Run: ollama pull llama3.2  to get a fast local model.
+local_models:
+  enabled: false
+  available: []              # auto-populated by setup.py; or list model names manually
+
+# ── Memory ────────────────────────────────────────────────────────────────────
 memory:
-  max_session_exchanges: 10       # compress to summary after this many turns
+  max_session_exchanges: 10  # auto-compress to summary after this many turns
   long_term_path: memory/long_term
 
+# ── Knowledge base ────────────────────────────────────────────────────────────
+# Drop any .md file into the knowledge/ folder.
+# Relevant snippets are auto-injected into agent prompts — zero config required.
 knowledge:
-  path: knowledge                 # drop .md files here; they are auto-searched
+  path: knowledge
 
+# ── MCP tool servers (optional) ───────────────────────────────────────────────
 mcp:
   servers: []
-  # Add MCP server configs as you connect tools, e.g.:
+  # examples:
   # - name: filesystem
   #   command: npx
-  #   args: [-y, "@modelcontextprotocol/server-filesystem", /some/path]
+  #   args: [-y, "@modelcontextprotocol/server-filesystem", /path/to/dir]
   # - name: brave-search
   #   command: npx
   #   args: [-y, "@modelcontextprotocol/server-brave-search"]
   #   env:
-  #     BRAVE_API_KEY: your_key
+  #     BRAVE_API_KEY: your_key_here
