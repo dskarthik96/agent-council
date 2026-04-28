@@ -38,6 +38,30 @@ The council is more reliable because the Critic is *structurally required* to di
 
 ---
 
+## Token cost analysis
+
+Full methodology in [`token_analysis.md`](token_analysis.md). Summary:
+
+| Setup | Cost / question | 100 questions |
+|---|---|---|
+| Single Sonnet (no cache) | $0.0065 | $0.65 |
+| Naive 3-agent (no caching) | $0.0285 | $2.85 |
+| **Council — first call** | **$0.0195** | **$1.95** |
+| **Council — repeat calls** | **$0.0174** | **$1.74** |
+| **Council + local Ollama routing** | **$0.0172** | **$1.72** |
+
+**Council vs naive multi-agent: 39–40% cheaper. Council vs single Sonnet: 2.7× the cost but 4× the output** (3 specialist responses + synthesised Leader judgment).
+
+The savings come from three levers:
+
+1. **Shared context caching** — the project KB block is written once and read from cache by all agents. At 400 tokens shared context, caching cuts context costs by 59%. As the KB grows, savings grow proportionally.
+2. **Model tiering** — Haiku handles routing and execution tasks ($0.80/1M input vs Sonnet's $3/1M), saving ~$0.007/question vs an all-Sonnet setup.
+3. **Local Ollama routing** — routing is a simple classification task any 3B model handles. Moving it to Ollama makes routing and session compression free.
+
+If you wanted equivalent quality from a single agent you'd need 4 separate calls (3 persona calls + synthesis), no caching → **$0.034/question** — 2× the cost of the Council with worse output.
+
+---
+
 ## How it works
 
 ```
@@ -257,6 +281,12 @@ agent-council/
 │
 └── knowledge/              drop .md files here
 ```
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 ---
 
