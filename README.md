@@ -101,7 +101,7 @@ cd agent-council
 pip install -r requirements.txt
 
 cp .env.example .env
-# edit .env and add your ANTHROPIC_API_KEY
+# edit .env and add your ANTHROPIC_API_KEY and other API keys to interact with mcp connectors
 
 python setup.py        # interactive setup wizard — configures agents and knowledge
 ```
@@ -188,7 +188,7 @@ agents:
     extra_instructions: "focus on EU/UK jurisdiction"
 ```
 
-Done. No other changes.
+Done. No other changes. Its easy for anyone to update the skill tree and keep the yaml updated with relevant skills as well as edit them
 
 ---
 
@@ -289,9 +289,3 @@ agent-council/
 MIT — see [LICENSE](LICENSE).
 
 ---
-
-## Environment variables
-
-| Variable | Required | Description |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | Yes | Your Anthropic API key — get one at console.anthropic.com |
